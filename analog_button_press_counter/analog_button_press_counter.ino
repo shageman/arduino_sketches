@@ -60,30 +60,28 @@ void loop() {
     was_high = false;
   }
   
-  if (sw.elapsed() - time[0] > NO_ACTION_TIME_BEFORE_TIME_IS_STOPPED) {
-    if (!paused) {
-      sw.stop();
-      paused = true;
-      iterationsOfBlinking = 1;
+  if (started) {
+    if (sw.elapsed() - time[0] > NO_ACTION_TIME_BEFORE_TIME_IS_STOPPED) {
+      if (!paused) {
+        sw.stop();
+        paused = true;
+        iterationsOfBlinking = 1;
+      }
+    } else {
+      sw.start();
+      paused = false;
     }
-  } else {
-    sw.start();
-    paused = false;    
   }
   
   String timeValue = timeString(sw.elapsed());
   if (paused) {
     if (iterationsOfBlinking > 0) {
       iterationsOfBlinking++;
-      if (iterationsOfBlinking >= ITERATIONS_TO_BLINK_ON) {
-        iterationsOfBlinking = -1;
-      }      
+      if (iterationsOfBlinking >= ITERATIONS_TO_BLINK_ON) iterationsOfBlinking = -1;
     } else {
       timeValue = "     ";
       iterationsOfBlinking--;
-      if (iterationsOfBlinking <= -ITERATIONS_TO_BLINK_OFF) {
-        iterationsOfBlinking = 1;
-      }      
+      if (iterationsOfBlinking <= -ITERATIONS_TO_BLINK_OFF) iterationsOfBlinking = 1;
     }    
   }
 
@@ -123,15 +121,10 @@ void printLCD(int valueToShow, String elapsedTime, int counter, float frequency)
 }
 
 String timeString(long time){
-  String result = "";
-
   long minutes = time / 60000.0;
   long seconds = time / 1000 % 60;
 
-  result += zeroPaddedTimePart(minutes);
-  result += ":";
-  result += zeroPaddedTimePart(seconds);
-  return result;
+  return zeroPaddedTimePart(minutes) + ":" + zeroPaddedTimePart(seconds);
 }
 
 String zeroPaddedTimePart(long part) {
