@@ -126,12 +126,12 @@ void loop() {
 }
 
 void printTime(long time){
-   long minutes = time / 60000.0;
-   long seconds = time / 1000 % 60;
+  long minutes = time / 60000.0;
+  long seconds = time / 1000 % 60;
 
-   lcd.print(zeroPaddedTimePart(minutes));
-   lcd.print(":");
-   lcd.print(zeroPaddedTimePart(seconds));
+  lcd.print(zeroPaddedTimePart(minutes));
+  lcd.print(":");
+  lcd.print(zeroPaddedTimePart(seconds));
 }
 
 String zeroPaddedTimePart(long part) {
