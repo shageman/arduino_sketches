@@ -14,13 +14,15 @@ int counter;
 int iterationOfShowingPower;
 int iterationsOfBlinking;
 int valueToShow;
-boolean was_high;
-boolean started;
-boolean paused;
+boolean was_high = false;
+boolean started = false;
+boolean paused = false;
 unsigned long time[2] = {0,0};
 float frequency;
 
 void setup() {
+  sw.stop();
+
   lcd.begin(16, 2);
   lcd.clear();
   
@@ -32,16 +34,12 @@ void loop() {
   boolean high;
   
   if (value > LOW_HIGH_BORDER) {
-    if (value > valueToShow) {
-      valueToShow = value;
-    }
-    high = true;
     iterationOfShowingPower = 0;
+    if (value > valueToShow) valueToShow = value;
+    high = true;
   } else {
     iterationOfShowingPower++;
-    if (iterationOfShowingPower >= ITERATIONS_TO_KEEP_DISPLAYING_POWER) {
-      valueToShow = 0;
-    }
+    if (iterationOfShowingPower >= ITERATIONS_TO_KEEP_DISPLAYING_POWER) valueToShow = 0;
     high = false;
   }
   
@@ -73,6 +71,7 @@ void loop() {
     paused = false;    
   }
   
+  String timeValue = timeString(sw.elapsed());
   if (paused) {
     if (iterationsOfBlinking > 0) {
       iterationsOfBlinking++;
@@ -80,6 +79,7 @@ void loop() {
         iterationsOfBlinking = -1;
       }      
     } else {
+      timeValue = "     ";
       iterationsOfBlinking--;
       if (iterationsOfBlinking <= -ITERATIONS_TO_BLINK_OFF) {
         iterationsOfBlinking = 1;
@@ -87,7 +87,7 @@ void loop() {
     }    
   }
 
-  printLCD(valueToShow, elapsedTime, counter, frequency);
+  printLCD(valueToShow, timeValue, counter, frequency);
   delay(40);
 }
 
@@ -108,13 +108,7 @@ void printLCD(int valueToShow, String elapsedTime, int counter, float frequency)
 // Top Right
   lcd.setCursor(9,0);
   lcd.print("t:");
-  if (started) {
-    if (paused && iterationsOfBlinking > 0) {
-      lcd.print("     ");
-    } else {
-      lcd.print(timeString(sw.elapsed()));
-    }
-  }
+  lcd.print(elapsedTime);
 
 // Bottom Lift
   lcd.setCursor(0,1);
