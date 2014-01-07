@@ -29,7 +29,6 @@ void setup() {
 
 void loop() {  
   int value = analogRead(SENSOR_PIN);
-  char buffer[16];
   boolean high;
   
   if (value > LOW_HIGH_BORDER) {
@@ -88,11 +87,17 @@ void loop() {
     }    
   }
 
-  //The display is going to show the following values:
-  // Top left: Highest measurement in the last turn
-  // Top right: Elapsed time
-  // Bottom left: NUmber of turns
-  // Bottom right: Turn Frequency
+  printLCD(valueToShow, elapsedTime, counter, frequency);
+  delay(40);
+}
+
+//The display is going to show the following values:
+// Top left: Highest measurement in the last turn
+// Top right: Elapsed time
+// Bottom left: NUmber of turns
+// Bottom right: Turn Frequency
+void printLCD(int valueToShow, String elapsedTime, int counter, float frequency) {
+  char buffer[16];
 
 // Top Left  
   lcd.setCursor(0,0);
@@ -121,8 +126,6 @@ void loop() {
   lcd.setCursor(11,1);
   lcd.print("f:");
   lcd.print(dtostrf(frequency,3,0,buffer));
-
-  delay(40);
 }
 
 String timeString(long time){
