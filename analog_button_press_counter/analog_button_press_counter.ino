@@ -129,11 +129,14 @@ void printTime(long time){
    long minutes = time / 60000.0;
    long seconds = time / 1000 % 60;
 
-   if (minutes < 10) lcd.print("0");
-   lcd.print(minutes);
+   lcd.print(zeroPaddedTimePart(minutes));
    lcd.print(":");
-   if (seconds < 10) lcd.print("0");
-   lcd.print(seconds);
+   lcd.print(zeroPaddedTimePart(seconds));
 }
 
+String zeroPaddedTimePart(long part) {
+  String pad = "";
+  if (part < 10) pad += ("0");
+  return pad + part;
+}
 
