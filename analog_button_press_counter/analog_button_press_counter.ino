@@ -17,7 +17,7 @@ int valueToShow;
 boolean was_high = false;
 boolean started = false;
 boolean paused = false;
-unsigned long time[2] = {0,0};
+unsigned long lastTime = 0;
 float frequency;
 
 void setup() {
@@ -49,9 +49,9 @@ void loop() {
       sw.start();
     }
 
-    time[1] = sw.elapsed();
-    frequency = 1.0 / (time[1] - time[0]) * 60000;
-    time[0] = time[1];
+    unsigned long currentTime = sw.elapsed();
+    frequency = 1.0 / (currentTime - lastTime) * 60000;
+    lastTime = currentTime;
 
     valueToShow = value;
     counter += 1;
@@ -61,7 +61,7 @@ void loop() {
   }
   
   if (started) {
-    if (sw.elapsed() - time[0] > NO_ACTION_TIME_BEFORE_TIME_IS_STOPPED) {
+    if (sw.elapsed() - lastTime > NO_ACTION_TIME_BEFORE_TIME_IS_STOPPED) {
       if (!paused) {
         sw.stop();
         paused = true;
