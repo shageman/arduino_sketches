@@ -1,10 +1,6 @@
 #include <StopWatch.h>
 #include <LiquidCrystal.h>
 
-LiquidCrystal lcd(12,11,5,4,3,2);
-
-StopWatch sw;    // MILLIS (default)
-
 const int SENSOR_PIN = 0; 
 const int LOW_HIGH_BORDER = 100;
 const int ITERATIONS_TO_KEEP_DISPLAYING_POWER = 5;
@@ -12,16 +8,16 @@ const int ITERATIONS_TO_BLINK_ON = 15;
 const int ITERATIONS_TO_BLINK_OFF = 8;
 const int NO_ACTION_TIME_BEFORE_TIME_IS_STOPPED = 5000;
 
+LiquidCrystal lcd(12,11,5,4,3,2);
+StopWatch sw;    // MILLIS (default)
 int counter;
 int iterationOfShowingPower;
 int iterationsOfBlinking;
 int valueToShow;
-boolean high;
 boolean was_high;
 boolean started;
 boolean paused;
 unsigned long time[2] = {0,0};
-volatile unsigned long per = 0;
 float frequency;
 
 void setup() {
@@ -34,6 +30,7 @@ void setup() {
 void loop() {  
   int value;
   char buffer[16];
+  boolean high;
 
   value = analogRead(SENSOR_PIN);
   
@@ -58,8 +55,7 @@ void loop() {
     }
 
     time[1] = sw.elapsed();
-    per = time[1] - time[0];
-    frequency = 1.0 / per*60000;
+    frequency = 1.0 / (time[1] - time[0]) * 60000;
     time[0] = time[1];
 
     valueToShow = value;
