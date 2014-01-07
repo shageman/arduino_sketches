@@ -1,5 +1,4 @@
 #include <StopWatch.h>
-#include <Time.h>
 #include <LiquidCrystal.h>
 
 LiquidCrystal lcd(12,11,5,4,3,2);
@@ -54,12 +53,11 @@ void loop() {
   
   if (high && !was_high) {
     if (!started) {
-      setTime(0,0,0,0,0,0);
       started = true;
       sw.start();
     }
 
-    time[1] = millis();
+    time[1] = sw.elapsed();
     per = time[1] - time[0];
     frequency = 1.0 / per*60000;
     time[0] = time[1];
@@ -71,7 +69,7 @@ void loop() {
     was_high = false;
   }
   
-  if (millis() - time[0] > NO_ACTION_TIME_BEFORE_TIME_IS_STOPPED {
+  if (sw.elapsed() - time[0] > NO_ACTION_TIME_BEFORE_TIME_IS_STOPPED) {
     if (!paused) {
       sw.stop();
       paused = true;
