@@ -28,11 +28,9 @@ void setup() {
 }
 
 void loop() {  
-  int value;
+  int value = analogRead(SENSOR_PIN);
   char buffer[16];
   boolean high;
-
-  value = analogRead(SENSOR_PIN);
   
   if (value > LOW_HIGH_BORDER) {
     if (value > valueToShow) {
