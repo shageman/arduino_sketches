@@ -1,18 +1,26 @@
+#include <StopWatch.h>
 #include <Time.h>
 #include <LiquidCrystal.h>
 
 LiquidCrystal lcd(12,11,5,4,3,2);
 
+StopWatch sw;    // MILLIS (default)
+
 const int SENSOR_PIN = 0; 
 const int LOW_HIGH_BORDER = 100;
 const int ITERATIONS_TO_KEEP_DISPLAYING_POWER = 5;
+const int ITERATIONS_TO_BLINK_ON = 15;
+const int ITERATIONS_TO_BLINK_OFF = 8;
+const int NO_ACTION_TIME_BEFORE_TIME_IS_STOPPED = 5000;
 
 int counter;
 int iterationOfShowingPower;
+int iterationsOfBlinking;
 int valueToShow;
 boolean high;
 boolean was_high;
 boolean started;
+boolean paused;
 unsigned long time[2] = {0,0};
 volatile unsigned long per = 0;
 float frequency;
@@ -48,11 +56,12 @@ void loop() {
     if (!started) {
       setTime(0,0,0,0,0,0);
       started = true;
+      sw.start();
     }
 
     time[1] = millis();
     per = time[1] - time[0];
-    frequency = 1.0 / per*1000*60;
+    frequency = 1.0 / per*60000;
     time[0] = time[1];
 
     valueToShow = value;
@@ -60,6 +69,31 @@ void loop() {
     was_high = true;
   } else if (!high && was_high) {
     was_high = false;
+  }
+  
+  if (millis() - time[0] > NO_ACTION_TIME_BEFORE_TIME_IS_STOPPED {
+    if (!paused) {
+      sw.stop();
+      paused = true;
+      iterationsOfBlinking = 1;
+    }
+  } else {
+    sw.start();
+    paused = false;    
+  }
+  
+  if (paused) {
+    if (iterationsOfBlinking > 0) {
+      iterationsOfBlinking++;
+      if (iterationsOfBlinking >= ITERATIONS_TO_BLINK_ON) {
+        iterationsOfBlinking = -1;
+      }      
+    } else {
+      iterationsOfBlinking--;
+      if (iterationsOfBlinking <= -ITERATIONS_TO_BLINK_OFF) {
+        iterationsOfBlinking = 1;
+      }      
+    }    
   }
 
   //The display is going to show the following values:
@@ -76,10 +110,13 @@ void loop() {
 
 // Top Right
   lcd.setCursor(9,0);
-  lcd.print("t");
+  lcd.print("t:");
   if (started) {
-    printDigits(minute());
-    printDigits(second());
+    if (paused && iterationsOfBlinking > 0) {
+      lcd.print("     ");
+    } else {
+      printTime(sw.elapsed());
+    }
   }
 
 // Bottom Lift
@@ -96,10 +133,15 @@ void loop() {
   delay(40);
 }
 
-void printDigits(int digits){
-  // utility function for clock display: prints preceding colon and leading 0
-  lcd.print(":");
-  if(digits < 10) lcd.print('0');
-  lcd.print(digits);
+void printTime(long time){
+   long minutes = time / 60000.0;
+   long seconds = time / 1000 % 60;
+
+   if (minutes < 10) lcd.print("0");
+   lcd.print(minutes);
+   lcd.print(":");
+   if (seconds < 10) lcd.print("0");
+   lcd.print(seconds);
 }
+
 
