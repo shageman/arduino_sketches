@@ -107,7 +107,7 @@ void loop() {
     if (paused && iterationsOfBlinking > 0) {
       lcd.print("     ");
     } else {
-      printTime(sw.elapsed());
+      lcd.print(timeString(sw.elapsed()));
     }
   }
 
@@ -125,13 +125,16 @@ void loop() {
   delay(40);
 }
 
-void printTime(long time){
+String timeString(long time){
+  String result = "";
+
   long minutes = time / 60000.0;
   long seconds = time / 1000 % 60;
 
-  lcd.print(zeroPaddedTimePart(minutes));
-  lcd.print(":");
-  lcd.print(zeroPaddedTimePart(seconds));
+  result += zeroPaddedTimePart(minutes);
+  result += ":";
+  result += zeroPaddedTimePart(seconds);
+  return result;
 }
 
 String zeroPaddedTimePart(long part) {
